@@ -2,7 +2,9 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Akıllı Atık Ayrıştırma Konteyneri</title>
     <style>
         * {
@@ -11,13 +13,19 @@
             box-sizing: border-box;
         }
 
+        html {
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background: #000000;
             color: #f5f5f7;
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
         }
 
         .slide-container {
@@ -68,18 +76,35 @@
         .slide-content {
             max-width: 1100px;
             width: 100%;
-            animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1);
+            animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            -webkit-animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             position: relative;
             z-index: 1;
+            will-change: opacity, transform;
         }
 
         @keyframes fadeInUp {
             from {
                 opacity: 0;
                 transform: translateY(50px);
+                -webkit-transform: translateY(50px);
             }
             to {
                 opacity: 1;
+                transform: translateY(0);
+                -webkit-transform: translateY(0);
+            }
+        }
+
+        @-webkit-keyframes fadeInUp {
+            from {
+                opacity: 0;
+                -webkit-transform: translateY(50px);
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                -webkit-transform: translateY(0);
                 transform: translateY(0);
             }
         }
@@ -102,14 +127,29 @@
             background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
             background-size: 50px 50px;
             animation: moveGrid 20s linear infinite;
+            -webkit-animation: moveGrid 20s linear infinite;
             pointer-events: none;
+            will-change: transform;
         }
 
         @keyframes moveGrid {
             0% {
                 transform: translate(0, 0);
+                -webkit-transform: translate(0, 0);
             }
             100% {
+                transform: translate(50px, 50px);
+                -webkit-transform: translate(50px, 50px);
+            }
+        }
+
+        @-webkit-keyframes moveGrid {
+            0% {
+                -webkit-transform: translate(0, 0);
+                transform: translate(0, 0);
+            }
+            100% {
+                -webkit-transform: translate(50px, 50px);
                 transform: translate(50px, 50px);
             }
         }
@@ -183,8 +223,10 @@
             padding: 2.5rem;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            -webkit-transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             position: relative;
             overflow: hidden;
+            will-change: transform, box-shadow;
         }
 
         .card::before {
@@ -196,12 +238,16 @@
             height: 3px;
             background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
             transform: scaleX(0);
+            -webkit-transform: scaleX(0);
             transform-origin: left;
+            -webkit-transform-origin: left;
             transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            -webkit-transition: -webkit-transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .card:hover {
             transform: translateY(-8px) scale(1.02);
+            -webkit-transform: translateY(-8px) scale(1.02);
             box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);
             background: rgba(255, 255, 255, 0.05);
             border-color: rgba(102, 126, 234, 0.3);
@@ -209,6 +255,7 @@
 
         .card:hover::before {
             transform: scaleX(1);
+            -webkit-transform: scaleX(1);
         }
 
         .card h4 {
@@ -736,10 +783,11 @@
     <div class="slide-indicator" id="slideIndicator"></div>
 
     <script>
-        const slideContainer = document.getElementById('slideContainer');
-        const slideIndicator = document.getElementById('slideIndicator');
-        const progressBar = document.getElementById('progressBar');
-        const slides = document.querySelectorAll('.slide');
+        document.addEventListener('DOMContentLoaded', function() {
+            const slideContainer = document.getElementById('slideContainer');
+            const slideIndicator = document.getElementById('slideIndicator');
+            const progressBar = document.getElementById('progressBar');
+            const slides = document.querySelectorAll('.slide');
 
         slides.forEach((slide, index) => {
             const dot = document.createElement('div');
@@ -801,16 +849,20 @@
                 if (entry.isIntersecting) {
                     entry.target.style.opacity = '1';
                     entry.target.style.transform = 'translateY(0)';
+                    entry.target.style.webkitTransform = 'translateY(0)';
                 }
             });
         }, {
-            threshold: 0.1
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
         });
 
         document.querySelectorAll('.card, .step, .benefit-item').forEach(el => {
             el.style.opacity = '0';
             el.style.transform = 'translateY(30px)';
+            el.style.webkitTransform = 'translateY(30px)';
             el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            el.style.webkitTransition = 'opacity 0.6s ease, -webkit-transform 0.6s ease';
             observer.observe(el);
         });
 
@@ -841,6 +893,7 @@
         }
 
         updateProgress();
+        });
     </script>
 </body>
 </html>
